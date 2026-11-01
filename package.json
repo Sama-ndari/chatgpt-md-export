@@ -1,0 +1,33 @@
+{
+  "name": "chatgpt-md-export",
+  "version": "0.1.0",
+  "description": "Export a ChatGPT conversation URL to a clean Markdown file with downloaded attachments",
+  "type": "module",
+  "bin": {
+    "chatgpt-md-export": "dist/src/main.js"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "dev": "tsx src/main.ts",
+    "start": "node dist/src/main.js",
+    "test": "vitest run",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "check": "npm test && npm run typecheck && npm run build"
+  },
+  "keywords": [
+    "chatgpt",
+    "markdown",
+    "export",
+    "conversation"
+  ],
+  "license": "UNLICENSED",
+  "devDependencies": {
+    "@types/node": "^22.13.14",
+    "tsx": "^4.20.5",
+    "typescript": "^5.9.2",
+    "vitest": "^3.2.4"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
