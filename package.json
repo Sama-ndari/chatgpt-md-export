@@ -2,6 +2,7 @@
   "name": "chatgpt-md-export",
   "version": "0.1.0",
   "description": "Export a ChatGPT conversation URL to a clean Markdown file with downloaded attachments",
+  "author": "Samandari",
   "type": "module",
   "bin": {
     "chatgpt-md-export": "dist/src/main.js"

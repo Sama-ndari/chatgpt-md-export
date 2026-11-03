@@ -1,7 +1,10 @@
 #!/usr/bin/env node
+import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
+import { fileURLToPath } from "node:url";
 import { loadEnvFile } from "./config/env-file.js";
 import { exportConversation } from "./export/export-conversation.js";
+import { BUILDER_CREDIT, TOOL_NAME } from "./shared/branding.js";
 import { AppError, serializeError } from "./shared/errors.js";
 
 interface CliArgs {
@@ -9,6 +12,35 @@ interface CliArgs {
   outDir?: string;
   author?: string;
   skipFiles: boolean;
+}
+
+interface PackageMeta {
+  name: string;
+  version: string;
+}
+
+function findPackageJsonPath(): string {
+  let dir = path.dirname(fileURLToPath(import.meta.url));
+  for (let i = 0; i < 6; i++) {
+    const candidate = path.join(dir, "package.json");
+    if (existsSync(candidate)) return candidate;
+    dir = path.dirname(dir);
+  }
+  throw new AppError("CLI_USAGE_ERROR", "Could not locate package.json.");
+}
+
+function readPackageMeta(): PackageMeta {
+  const raw = JSON.parse(readFileSync(findPackageJsonPath(), "utf8")) as PackageMeta;
+  return { name: raw.name || TOOL_NAME, version: raw.version || "0.0.0" };
+}
+
+function cliBanner(): string {
+  const pkg = readPackageMeta();
+  return `${pkg.name} v${pkg.version} · ${BUILDER_CREDIT}`;
+}
+
+function printVersion(): void {
+  process.stdout.write(`${cliBanner()}\n`);
 }
 
 function printUsage(): void {
@@ -19,7 +51,10 @@ Options:
   -o, --out <dir>       Output root directory (default: ./exports)
   -a, --author <name>   Author name shown in the markdown header
       --skip-files      Do not download attachments
+  -V, --version         Show version
   -h, --help            Show help
+
+${cliBanner()}
 
 Examples:
   chatgpt-md-export "https://chatgpt.com/c/<id>"
@@ -30,6 +65,10 @@ Examples:
 function parseArgs(argv: string[]): CliArgs {
   if (argv.includes("-h") || argv.includes("--help")) {
     printUsage();
+    process.exit(0);
+  }
+  if (argv.includes("-V") || argv.includes("--version")) {
+    printVersion();
     process.exit(0);
   }
 
@@ -81,6 +120,7 @@ async function main(): Promise<void> {
 
   process.stdout.write(
     [
+      cliBanner(),
       `Exported: ${result.title}`,
       `Author:   ${result.author}`,
       `Markdown: ${result.markdownPath}`,

@@ -1,5 +1,7 @@
 # chatgpt-md-export
 
+**Built by Samandari**
+
 CLI qui exporte une conversation ChatGPT (URL) en Markdown propre, avec pièces jointes et payload JSON.
 
 Objectif : passer le Markdown + `files/` à une autre IA, sans rescraper l’UI.
@@ -20,6 +22,7 @@ npm start -- "https://chatgpt.com/c/<conversation-id>"
 Sortie typique :
 
 ```text
+chatgpt-md-export v0.1.0 · built by Samandari
 Exported: Mon titre
 Author:   Sam
 Markdown: .../exports/mon-titre-abcd1234/conversation.md
@@ -170,3 +173,5 @@ tests/
 ## Licence
 
 `UNLICENSED` — usage personnel / privé selon `package.json`.
+
+Built by **Samandari**.

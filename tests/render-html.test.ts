@@ -25,5 +25,7 @@ describe("renderConversationHtml", () => {
     expect(html).toContain("Expand all");
     expect(html).toContain("Collapse all");
     expect(html).toContain("Fraunces");
+    expect(html).toContain("export-credit");
+    expect(html).toContain("Exported with chatgpt-md-export · built by Samandari");
   });
 });

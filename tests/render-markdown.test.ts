@@ -43,5 +43,6 @@ describe("renderConversationMarkdown", () => {
     expect(md).toContain("![photo.png](files/photo.png)");
     expect(md).toContain("Bien reçu.");
     expect(md).not.toContain("<details>");
+    expect(md).toContain("*Exported with chatgpt-md-export · built by Samandari*");
   });
 });

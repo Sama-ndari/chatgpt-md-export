@@ -1,4 +1,5 @@
 import type { ExportMessage, MessagePart } from "../chatgpt/types.js";
+import { EXPORT_CREDIT } from "../shared/branding.js";
 import { formatDate } from "../shared/format-date.js";
 import type { MarkdownHeaderInput } from "./render-markdown.js";
 
@@ -68,6 +69,9 @@ export function renderConversationHtml(input: RenderHtmlInput): string {
     <section class="thread" aria-label="Conversation">
 ${messagesHtml}
     </section>
+    <footer class="export-credit">
+      <p>${escapeHtml(EXPORT_CREDIT)}</p>
+    </footer>
   </main>
   <script>
     const setAll = (open) => {
@@ -487,6 +491,18 @@ body {
   color: var(--muted);
   font-style: italic;
   font-size: 0.92rem;
+}
+.export-credit {
+  margin-top: 2rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(201, 213, 223, 0.9);
+  text-align: center;
+}
+.export-credit p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.82rem;
+  letter-spacing: 0.02em;
 }
 @media (max-width: 640px) {
   .page { padding: 1.25rem 0.85rem 3rem; }
