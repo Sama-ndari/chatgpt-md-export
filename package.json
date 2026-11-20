@@ -1,31 +1,32 @@
 {
-  "name": "chatgpt-md-export",
-  "version": "0.1.0",
-  "description": "Export a ChatGPT conversation URL to a clean Markdown file with downloaded attachments",
+  "name": "chatgpt-md-export-monorepo",
+  "private": true,
+  "version": "0.2.0",
+  "description": "Export ChatGPT conversations to clean Markdown — shared core, CLI, and VS Code extension",
   "author": "Samandari",
+  "license": "MIT",
   "type": "module",
-  "bin": {
-    "chatgpt-md-export": "dist/src/main.js"
-  },
-  "scripts": {
-    "build": "tsc -p tsconfig.json",
-    "dev": "tsx src/main.ts",
-    "start": "node dist/src/main.js",
-    "test": "vitest run",
-    "typecheck": "tsc -p tsconfig.json --noEmit",
-    "check": "npm test && npm run typecheck && npm run build"
-  },
-  "keywords": [
-    "chatgpt",
-    "markdown",
-    "export",
-    "conversation"
+  "workspaces": [
+    "packages/core",
+    "packages/cli",
+    "packages/extension"
   ],
-  "license": "UNLICENSED",
+  "scripts": {
+    "build": "npm run build -w @chatgpt-md-export/core && npm run build -w chatgpt-md-export && npm run build -w chatgpt-md-export-vscode",
+    "test": "vitest run",
+    "typecheck": "tsc -b packages/core packages/cli packages/extension",
+    "lint": "eslint packages --max-warnings 0",
+    "check": "npm run lint && npm test && npm run typecheck && npm run build"
+  },
   "devDependencies": {
+    "@eslint/js": "^9.17.0",
     "@types/node": "^22.13.14",
+    "@types/vscode": "^1.90.0",
+    "esbuild": "^0.25.0",
+    "eslint": "^9.17.0",
     "tsx": "^4.20.5",
     "typescript": "^5.9.2",
+    "typescript-eslint": "^8.19.0",
     "vitest": "^3.2.4"
   },
   "engines": {

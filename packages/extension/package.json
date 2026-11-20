@@ -1,0 +1,107 @@
+{
+  "name": "chatgpt-md-export-vscode",
+  "displayName": "ChatGPT Markdown Export",
+  "version": "0.2.0",
+  "description": "%extension.description%",
+  "publisher": "samandari",
+  "author": "Samandari",
+  "license": "MIT",
+  "private": true,
+  "icon": "media/icon.png",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Sama-ndari/chatgpt-md-export.git"
+  },
+  "categories": [
+    "Other",
+    "Notebooks"
+  ],
+  "keywords": [
+    "chatgpt",
+    "markdown",
+    "export",
+    "conversation",
+    "ai"
+  ],
+  "engines": {
+    "vscode": "^1.90.0"
+  },
+  "main": "./dist/extension.cjs",
+  "activationEvents": [],
+  "contributes": {
+    "commands": [
+      {
+        "command": "chatgptMdExport.exportFromUrl",
+        "title": "%command.exportFromUrl.title%",
+        "category": "%command.category%"
+      },
+      {
+        "command": "chatgptMdExport.exportFromArchive",
+        "title": "%command.exportFromArchive.title%",
+        "category": "%command.category%"
+      },
+      {
+        "command": "chatgptMdExport.setToken",
+        "title": "%command.setToken.title%",
+        "category": "%command.category%"
+      },
+      {
+        "command": "chatgptMdExport.clearToken",
+        "title": "%command.clearToken.title%",
+        "category": "%command.category%"
+      },
+      {
+        "command": "chatgptMdExport.preview",
+        "title": "%command.preview.title%",
+        "category": "%command.category%"
+      }
+    ],
+    "configuration": {
+      "title": "%configuration.title%",
+      "properties": {
+        "chatgptMdExport.outputDirectory": {
+          "type": "string",
+          "default": "exports",
+          "description": "%configuration.outputDirectory.description%"
+        },
+        "chatgptMdExport.authorName": {
+          "type": "string",
+          "default": "",
+          "description": "%configuration.authorName.description%"
+        },
+        "chatgptMdExport.downloadAttachments": {
+          "type": "boolean",
+          "default": true,
+          "description": "%configuration.downloadAttachments.description%"
+        },
+        "chatgptMdExport.accountId": {
+          "type": "string",
+          "default": "",
+          "description": "%configuration.accountId.description%"
+        },
+        "chatgptMdExport.openAfterExport": {
+          "type": "string",
+          "enum": [
+            "markdown",
+            "preview",
+            "none"
+          ],
+          "default": "preview",
+          "description": "%configuration.openAfterExport.description%"
+        }
+      }
+    }
+  },
+  "scripts": {
+    "build": "tsc -b && node esbuild.mjs",
+    "watch": "node esbuild.mjs --watch",
+    "package": "vsce package --no-dependencies"
+  },
+  "dependencies": {
+    "@chatgpt-md-export/core": "0.2.0"
+  },
+  "devDependencies": {
+    "@vscode/vsce": "^3.2.0"
+  },
+  "l10n": "./l10n"
+}

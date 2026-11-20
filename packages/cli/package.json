@@ -1,0 +1,19 @@
+{
+  "name": "chatgpt-md-export",
+  "version": "0.2.0",
+  "description": "CLI that exports a ChatGPT conversation URL or official export archive to clean Markdown",
+  "author": "Samandari",
+  "license": "MIT",
+  "type": "module",
+  "bin": {
+    "chatgpt-md-export": "dist/main.js"
+  },
+  "files": ["dist"],
+  "keywords": ["chatgpt", "markdown", "export", "conversation", "cli"],
+  "scripts": {
+    "build": "tsc -b"
+  },
+  "dependencies": {
+    "@chatgpt-md-export/core": "0.2.0"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "extension.description": "Exportez une conversation ChatGPT en Markdown, HTML et pièces jointes, directement depuis VS Code",
+  "command.category": "Export ChatGPT",
+  "command.exportFromUrl.title": "Exporter une conversation depuis une URL",
+  "command.exportFromArchive.title": "Exporter une conversation depuis l'archive officielle",
+  "command.setToken.title": "Définir le jeton d'accès",
+  "command.clearToken.title": "Supprimer le jeton d'accès",
+  "command.preview.title": "Afficher le dernier export",
+  "configuration.title": "Export ChatGPT en Markdown",
+  "configuration.outputDirectory.description": "Dossier des exports, relatif à la racine de l'espace de travail (ou absolu).",
+  "configuration.authorName.description": "Nom affiché comme auteur dans le Markdown et le HTML exportés.",
+  "configuration.downloadAttachments.description": "Télécharger les pièces jointes à côté du Markdown exporté.",
+  "configuration.accountId.description": "Identifiant de compte ChatGPT, nécessaire uniquement pour les espaces Team et Enterprise.",
+  "configuration.openAfterExport.description": "Ce qui s'ouvre à la fin d'un export."
+}

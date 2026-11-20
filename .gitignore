@@ -1,7 +1,8 @@
 node_modules/
 dist/
 exports/
-test/
+*.tsbuildinfo
+*.vsix
 *.log
 .env
 .DS_Store

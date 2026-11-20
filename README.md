@@ -2,176 +2,115 @@
 
 **Built by Samandari**
 
-CLI qui exporte une conversation ChatGPT (URL) en Markdown propre, avec pièces jointes et payload JSON.
+Export a ChatGPT conversation into clean Markdown, a standalone HTML chat view, the raw JSON
+payload, and the conversation's attachments. Available as a CLI and as a VS Code extension.
 
-Objectif : passer le Markdown + `files/` à une autre IA, sans rescraper l’UI.
+Goal: hand the Markdown + `files/` to another model, without re-scraping the UI.
 
-> **Non officiel** — sans lien avec OpenAI. Utilise les API privées de chatgpt.com. Le bearer token = secret (comme un mot de passe). Ne le committez jamais.
+> **Unofficial** — not affiliated with OpenAI. The URL mode uses chatgpt.com's private API and
+> your bearer token, which is a session secret. Never commit it.
 
-## Quick start
+## Packages
+
+| Package | What it is |
+| --- | --- |
+| [`packages/core`](packages/core) | Shared logic: fetching, archive parsing, Markdown/HTML rendering |
+| [`packages/cli`](packages/cli) | The `chatgpt-md-export` command-line tool |
+| [`packages/extension`](packages/extension) | The VS Code extension |
+
+## Two ways to export
+
+**Official archive — no token.** Request your data in ChatGPT (*Settings → Data controls →
+Export data*), unzip what you receive, and point the tool at the folder. Works for everyone,
+exports attachments from the archive itself.
+
+**Live URL — needs a bearer token.** Copy the `Authorization` header value from a signed-in
+`chatgpt.com` request. Supports `/c/`, `/share/`, `/share/e/`, and project conversations.
+Public `/share/` links work without a token.
+
+## Quick start — CLI
 
 ```bash
 npm install
 npm run build
-cp .env.example .env
-# Éditer .env → coller CHATGPT_BEARER_TOKEN
 
-npm start -- "https://chatgpt.com/c/<conversation-id>"
+# From an unzipped official export
+node packages/cli/dist/main.js --archive ~/Downloads/chatgpt-export --list
+node packages/cli/dist/main.js --archive ~/Downloads/chatgpt-export -c <conversation-id>
+
+# From a live URL
+cp .env.example .env     # then paste CHATGPT_BEARER_TOKEN
+node packages/cli/dist/main.js "https://chatgpt.com/c/<conversation-id>" -a "Sam"
 ```
 
-Sortie typique :
+### Options
 
 ```text
-chatgpt-md-export v0.1.0 · built by Samandari
-Exported: Mon titre
-Author:   Sam
-Markdown: .../exports/mon-titre-abcd1234/conversation.md
-HTML:     .../exports/mon-titre-abcd1234/conversation.html
-Files:    2 downloaded
-Folder:   .../exports/mon-titre-abcd1234
+  -o, --out <dir>          Output root directory (default: ./exports)
+  -a, --author <name>      Author name shown in the export header
+  -c, --conversation <id>  Conversation id inside the archive (default: most recent)
+  -l, --list               List the conversations found in the archive and exit
+      --skip-files         Do not download or copy attachments
+  -V, --version            Show version
+  -h, --help               Show help
 ```
 
-## Résultat
+## Quick start — VS Code extension
+
+```bash
+npm install && npm run build
+```
+
+Press <kbd>F5</kbd> to launch an Extension Development Host, then run
+**ChatGPT Export: Export Conversation from URL** or
+**ChatGPT Export: Export Conversation from Official Archive** from the command palette.
+
+To install it locally instead:
+
+```bash
+npm run package -w chatgpt-md-export-vscode
+code --install-extension packages/extension/chatgpt-md-export-vscode-*.vsix
+```
+
+The extension stores the bearer token in the OS keychain through VS Code's `SecretStorage`,
+never in a file. See [the extension README](packages/extension/README.md) for its settings.
+
+## Output
 
 ```text
 exports/
-  mon-titre-abcd1234/
-    conversation.md    # pour une autre IA / lecture texte
-    conversation.html  # chat pliable — ouvrir dans le navigateur
-    conversation.json  # payload brut API
-    files/             # pièces jointes téléchargées
+  my-conversation-abcd1234/
+    conversation.md    # clean Markdown, for another model or plain reading
+    conversation.html  # collapsible chat view — open in a browser
+    conversation.json  # raw payload
+    files/             # attachments
       screenshot.png
       notes.pdf
 ```
 
-**Markdown** : format simple (`## Author` / `## Assistant`) pour les IA.  
-**HTML** : vue chat (bulles, pliable). Ouvre `conversation.html` dans le navigateur.
+Attachments never abort an export: a file that cannot be fetched becomes an inline note
+explaining why (blocked by another account, missing from the archive, skipped).
 
-## Prérequis
+## Configuration (CLI)
 
-- Node.js **20+**
-- Compte ChatGPT + bearer token (conversations privées / fichiers)
+Values are read from the process environment first, then from the first file that exists among
+`./.env`, `~/.config/chatgpt-md-export/env`, and `~/.config/mcp-contexte-gpt/env`. Override the
+lookup with `CHATGPT_MD_EXPORT_ENV_FILE`.
 
-## Configuration
-
-### 1. Fichier `.env` (recommandé)
-
-```bash
-cp .env.example .env
-```
-
-| Variable | Requis | Description |
-| --- | --- | --- |
-| `CHATGPT_BEARER_TOKEN` | Oui* | JWT session ChatGPT (`accessToken`) |
-| `CHATGPT_ACCOUNT_ID` | Non | Compte équipe / enterprise (sinon déduit du JWT) |
-| `CHATGPT_AUTHOR_NAME` | Non | Nom affiché dans le Markdown (défaut : `User` ou `-a`) |
-| `CHATGPT_MD_EXPORT_ENV_FILE` | Non | Chemin absolu vers un autre fichier env |
-
-\* Requis pour conversations **privées** et téléchargement de fichiers. Les partages publics peuvent marcher sans token.
-
-`.env` est **gitignoré**. Ne poussez que `.env.example`.
-
-### 2. Récupérer le token
-
-1. Ouvrez [chatgpt.com/api/auth/session](https://chatgpt.com/api/auth/session) connecté → champ `accessToken`, **ou**
-2. DevTools → Network → requête vers `chatgpt.com` → header `Authorization: Bearer …`
-
-Le token expire : si vous voyez `AUTH_FAILED` / `AUTH_TOKEN_EXPIRED`, rafraîchissez-le.
-
-### 3. Ordre de lecture des secrets
-
-1. `CHATGPT_MD_EXPORT_ENV_FILE` (si défini)
-2. `.env` à la racine du projet
-3. `~/.config/chatgpt-md-export/env`
-4. `~/.config/mcp-contexte-gpt/env` (réutilisation éventuelle)
-
-Les variables déjà présentes dans l’environnement processus gagnent sur le fichier.
-
-## Usage
-
-```bash
-# Dev (tsx, sans rebuild)
-npm run dev -- "https://chatgpt.com/c/<id>"
-
-# Après build
-npm start -- "https://chatgpt.com/c/<id>"
-# équivalent :
-node dist/src/main.js "https://chatgpt.com/c/<id>"
-
-# Options
-npm start -- "https://chatgpt.com/c/<id>" -o ./exports -a "Sam"
-npm start -- "https://chatgpt.com/share/<id>" --skip-files
-```
-
-| Option | Rôle |
+| Variable | Purpose |
 | --- | --- |
-| `-o, --out <dir>` | Dossier racine de sortie (défaut : `./exports`) |
-| `-a, --author <name>` | Nom Author dans le Markdown |
-| `--skip-files` | N’exporte pas les pièces jointes (placeholders dans le `.md`) |
-| `-h, --help` | Aide |
+| `CHATGPT_BEARER_TOKEN` | Required for private conversations and attachment downloads |
+| `CHATGPT_ACCOUNT_ID` | Only for Team and Enterprise workspaces |
+| `CHATGPT_AUTHOR_NAME` | Default author name in the export header |
 
-Après `npm link` (ou install global du bin) :
-
-```bash
-chatgpt-md-export "https://chatgpt.com/c/<id>"
-```
-
-## URLs supportées
-
-| Type | Exemple |
-| --- | --- |
-| Conversation privée | `https://chatgpt.com/c/{id}` |
-| Partage | `https://chatgpt.com/share/{id}` |
-| Partage (`/e/`) | `https://chatgpt.com/share/e/{id}` |
-| Projet | `https://chatgpt.com/g/{project-slug}/c/{id}` |
-| Projet partagé | `https://chatgpt.com/g/{slug}/shared/c/{id}?owner_user_id={owner}` |
-
-Hosts : `chatgpt.com`, `chat.openai.com`.
-
-## Ce qui est exporté
-
-- Fil de messages (branche active, depuis `current_node`)
-- Texte, blocs de code, multimodal
-- Raisonnement / browsing / outils (quand présents dans le payload)
-- Pièces jointes (`file-service://`, sediment, etc.) → `files/` + liens relatifs
-- Si une PJ appartient à un autre compte (`user_mismatch`), l’export **continue** avec un placeholder clair
-
-## Dépannage
-
-| Symptôme | Piste |
-| --- | --- |
-| `AUTH_TOKEN_MISSING` | Remplir `CHATGPT_BEARER_TOKEN` dans `.env` |
-| `AUTH_TOKEN_EXPIRED` / `AUTH_FAILED` | Nouveau token depuis la session ChatGPT |
-| `UNSUPPORTED_URL` | Vérifier le format d’URL ci-dessus |
-| Pièces jointes en échec | Token expiré, ou fichier d’un autre compte |
-| `Attachment blocked (uploaded by another account)` | Normal si le patron a uploadé les docs : le share donne le texte, pas les fichiers. Export continue ; télécharge les PJ à la main ou avec le token uploader |
-| Projet partagé 403/404 | Ajouter `owner_user_id` dans l’URL |
-
-## Développement
+## Development
 
 ```bash
-npm test          # Vitest
-npm run typecheck
-npm run build
-npm run check     # test + typecheck + build
+npm run lint        # ESLint across every package
+npm test            # vitest
+npm run typecheck   # tsc -b
+npm run build       # core → CLI → extension bundle
+npm run check       # all of the above
 ```
 
-Stack : TypeScript (ESM), Node 20+, **aucune dépendance runtime** (seulement `fetch` / `fs` natifs).
-
-Structure :
-
-```text
-src/
-  main.ts                 # CLI
-  config/env-file.ts      # chargement .env / XDG
-  chatgpt/                # auth, client API, URLs, fichiers
-  export/                 # messages → Markdown + downloads
-  shared/                 # erreurs, dates
-tests/
-```
-
-## Licence
-
-`UNLICENSED` — usage personnel / privé selon `package.json`.
-
-Built by **Samandari**.
+MIT licensed.

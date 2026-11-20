@@ -1,0 +1,9 @@
+.vscode/**
+src/**
+dist/**
+!dist/extension.cjs
+node_modules/**
+esbuild.mjs
+tsconfig.json
+tsconfig.tsbuildinfo
+**/*.map
