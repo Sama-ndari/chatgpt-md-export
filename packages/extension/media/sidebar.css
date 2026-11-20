@@ -10,14 +10,23 @@
 body {
   margin: 0;
   padding: var(--gap);
+  min-height: 100vh;
+  display: flex;
   font-family: var(--vscode-font-family);
   font-size: var(--vscode-font-size);
   color: var(--vscode-foreground);
   background: transparent;
 }
 
+#root {
+  display: flex;
+  flex: 1;
+  min-width: 0;
+}
+
 .stack {
   display: flex;
+  flex: 1;
   flex-direction: column;
   gap: 18px;
 }
@@ -319,9 +328,10 @@ body {
   pointer-events: none;
 }
 
+/* Pinned to the bottom of the panel, whatever the content height. */
 .credit {
-  margin: 0;
-  padding-top: 2px;
+  margin: auto 0 0;
+  padding-top: 14px;
   text-align: center;
   font-size: 0.9em;
   color: var(--vscode-descriptionForeground);
