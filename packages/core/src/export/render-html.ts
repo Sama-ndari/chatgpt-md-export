@@ -1,5 +1,5 @@
 import type { ExportMessage, MessagePart } from "../chatgpt/types.js";
-import { EXPORT_CREDIT } from "../shared/branding.js";
+import { BUILDER_NAME, BUILDER_URL, TOOL_NAME } from "../shared/branding.js";
 import { formatDate } from "../shared/format-date.js";
 import { CHAT_STYLES } from "./render-html-styles.js";
 import type { MarkdownHeaderInput } from "./render-markdown.js";
@@ -18,7 +18,7 @@ export interface RenderHtmlInput {
 
 /**
  * Render a standalone HTML chat page with working expand/collapse
- * (open in a browser — Markdown preview often ignores details tags).
+ * (open in a browser, since Markdown preview often ignores details tags).
  */
 export function renderConversationHtml(input: RenderHtmlInput): string {
   return renderDocument({
@@ -85,7 +85,7 @@ ${renderHeaderSection(input.header, input.messageCount)}
 ${input.messagesHtml}
     </section>
     <footer class="export-credit">
-      <p>${escapeHtml(EXPORT_CREDIT)}</p>
+      <p>${renderCredit()}</p>
     </footer>
   </main>
   <script>
@@ -231,6 +231,12 @@ function messagePreview(parts: MessagePart[], maxLen = 110): string {
     return attachment.attachment.name || "attachment";
   }
   return "";
+}
+
+/** Footer credit with the builder name linked to their site. */
+function renderCredit(): string {
+  const link = `<a href="${BUILDER_URL}" target="_blank" rel="noopener noreferrer">${escapeHtml(BUILDER_NAME)}</a>`;
+  return `Exported with ${escapeHtml(TOOL_NAME)} \u00b7 built by ${link}`;
 }
 
 function escapeHtml(text: string): string {

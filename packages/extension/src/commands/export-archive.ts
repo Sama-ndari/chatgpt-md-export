@@ -8,15 +8,16 @@ import {
   type ChatgptExportArchive
 } from "@chatgpt-md-export/core";
 import { readConfig, resolveOutputRoot } from "../config.js";
-import type { LastExportStore } from "../last-export.js";
+import type { ExportHistory } from "../exports-history.js";
 import { finishExport } from "./finish-export.js";
+import { runExport } from "./run-export.js";
 
 interface ConversationPick extends vscode.QuickPickItem {
   conversationId: string;
 }
 
 /** Export one conversation out of an unzipped official ChatGPT data export. */
-export async function exportFromArchive(input: { lastExport: LastExportStore }): Promise<void> {
+export async function exportFromArchive(input: { history: ExportHistory }): Promise<void> {
   const archivePath = await pickArchiveFolder();
   if (!archivePath) return;
 
@@ -25,23 +26,18 @@ export async function exportFromArchive(input: { lastExport: LastExportStore }):
   if (!conversationId) return;
 
   const config = readConfig();
-  const result = await vscode.window.withProgress(
-    {
-      location: vscode.ProgressLocation.Notification,
-      title: vscode.l10n.t("Exporting conversation from the archive…"),
-      cancellable: false
-    },
-    () =>
-      exportConversationFromArchive({
-        archive,
-        conversationId,
-        outRoot: resolveOutputRoot(config),
-        author: config.authorName,
-        skipAttachments: !config.downloadAttachments
-      })
+  const result = await runExport(vscode.l10n.t("Exporting from the archive"), (onProgress) =>
+    exportConversationFromArchive({
+      archive,
+      conversationId,
+      outRoot: resolveOutputRoot(config),
+      author: config.authorName,
+      skipAttachments: !config.downloadAttachments,
+      onProgress
+    })
   );
 
-  await finishExport({ result, config, lastExport: input.lastExport });
+  await finishExport({ result, config, history: input.history });
 }
 
 async function pickArchiveFolder(): Promise<string | undefined> {

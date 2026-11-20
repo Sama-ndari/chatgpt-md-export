@@ -6,6 +6,7 @@ import { formatAttachmentSkipped } from "./attachment-failure.js";
 import type { AttachmentSource } from "./attachment-source.js";
 import { collectAttachments, conversationToExportMessages } from "./conversation-messages.js";
 import { downloadAttachments } from "./download-attachments.js";
+import type { ProgressReporter } from "./progress.js";
 import { renderConversationHtml } from "./render-html.js";
 import { renderConversationMarkdown, type MarkdownHeaderInput } from "./render-markdown.js";
 import { slugifyTitle } from "./slug.js";
@@ -21,6 +22,7 @@ export interface WriteConversationExportInput {
   author: string;
   /** Omit to render attachment placeholders instead of downloading files. */
   attachments?: AttachmentSource;
+  onProgress?: ProgressReporter;
 }
 
 export interface ConversationExportResult {
@@ -60,8 +62,11 @@ export async function writeConversationExport(
   const resolved = await resolveAttachments({
     attachments: collectAttachments(messages),
     filesDir,
-    source: input.attachments
+    source: input.attachments,
+    onProgress: input.onProgress
   });
+
+  input.onProgress?.({ stage: "writing" });
 
   const header: MarkdownHeaderInput = {
     title,
@@ -96,6 +101,7 @@ async function resolveAttachments(input: {
   attachments: ReturnType<typeof collectAttachments>;
   filesDir: string;
   source?: AttachmentSource;
+  onProgress?: ProgressReporter;
 }): Promise<ResolvedAttachments> {
   const empty: ResolvedAttachments = {
     relativePaths: new Map(),
@@ -116,7 +122,8 @@ async function resolveAttachments(input: {
   const result = await downloadAttachments({
     attachments: input.attachments,
     filesDir: input.filesDir,
-    source: input.source
+    source: input.source,
+    onProgress: input.onProgress
   });
   return {
     relativePaths: result.relativePaths,

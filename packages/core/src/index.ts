@@ -50,6 +50,7 @@ export {
   exportConversationFromUrl,
   type ExportFromUrlInput
 } from "./export/export-from-url.js";
+export type { ExportProgress, ProgressReporter } from "./export/progress.js";
 export { renderConversationHtml, type RenderHtmlInput } from "./export/render-html.js";
 export {
   renderConversationMarkdown,
@@ -57,6 +58,13 @@ export {
   type RenderMarkdownInput
 } from "./export/render-markdown.js";
 export { sanitizeFileName, slugifyTitle } from "./export/slug.js";
-export { BUILDER_CREDIT, EXPORT_CREDIT, TOOL_NAME } from "./shared/branding.js";
+export {
+  BUILDER_CREDIT,
+  BUILDER_NAME,
+  BUILDER_URL,
+  EXPORT_CREDIT,
+  EXPORT_CREDIT_MARKDOWN,
+  TOOL_NAME
+} from "./shared/branding.js";
 export { AppError, serializeError, type ErrorCode, type SerializedError } from "./shared/errors.js";
 export { formatDate } from "./shared/format-date.js";

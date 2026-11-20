@@ -11,5 +11,14 @@
   "configuration.authorName.description": "Nom affiché comme auteur dans le Markdown et le HTML exportés.",
   "configuration.downloadAttachments.description": "Télécharger les pièces jointes à côté du Markdown exporté.",
   "configuration.accountId.description": "Identifiant de compte ChatGPT, nécessaire uniquement pour les espaces Team et Enterprise.",
-  "configuration.openAfterExport.description": "Ce qui s'ouvre à la fin d'un export."
+  "configuration.openAfterExport.description": "Ce qui s'ouvre à la fin d'un export.",
+  "viewsContainer.title": "Export ChatGPT",
+  "view.sidebar.name": "Conversations",
+  "command.refresh.title": "Actualiser",
+  "command.openExport.title": "Ouvrir l'export",
+  "command.openMarkdown.title": "Ouvrir le Markdown",
+  "command.revealFolder.title": "Afficher le dossier de l'export",
+  "command.forgetExport.title": "Retirer de la liste",
+  "command.openTokenHelp.title": "Où trouver mon jeton ?",
+  "command.rate.title": "Noter cette extension"
 }

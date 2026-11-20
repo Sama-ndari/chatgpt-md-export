@@ -10,7 +10,7 @@ Sources:
   --archive <path>         Unzipped official ChatGPT data export, or its conversations.json
 
 Options:
-  -o, --out <dir>          Output root directory (default: ./exports)
+  -o, --out <dir>          Output root directory (default: ./chatgpt-exports)
   -a, --author <name>      Author name shown in the export header
   -c, --conversation <id>  Conversation id inside the archive (default: most recent)
   -l, --list               List the conversations found in the archive and exit

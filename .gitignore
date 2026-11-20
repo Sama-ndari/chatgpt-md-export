@@ -1,6 +1,7 @@
 node_modules/
 dist/
 exports/
+chatgpt-exports/
 *.tsbuildinfo
 *.vsix
 *.log

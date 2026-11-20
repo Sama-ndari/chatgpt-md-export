@@ -31,6 +31,21 @@ export default tseslint.config(
     }
   },
   {
+    // Runs in the webview, outside any tsconfig: browser globals, no type info.
+    files: ["packages/extension/media/*.js"],
+    extends: [tseslint.configs.disableTypeChecked],
+    languageOptions: {
+      globals: {
+        acquireVsCodeApi: "readonly",
+        document: "readonly",
+        window: "readonly"
+      }
+    },
+    rules: {
+      "max-lines-per-function": "off"
+    }
+  },
+  {
     files: ["packages/*/tests/**/*.ts", "eslint.config.js", "**/esbuild.mjs", "vitest.config.ts"],
     extends: [tseslint.configs.disableTypeChecked],
     languageOptions: {

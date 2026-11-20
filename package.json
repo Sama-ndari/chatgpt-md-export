@@ -2,7 +2,7 @@
   "name": "chatgpt-md-export-monorepo",
   "private": true,
   "version": "0.2.0",
-  "description": "Export ChatGPT conversations to clean Markdown — shared core, CLI, and VS Code extension",
+  "description": "Export ChatGPT conversations to clean Markdown: shared core, CLI, and VS Code extension",
   "author": "Samandari",
   "license": "MIT",
   "type": "module",

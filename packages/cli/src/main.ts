@@ -39,7 +39,7 @@ async function main(): Promise<void> {
 }
 
 function resolveOutRoot(outDir: string | undefined): string {
-  return path.resolve(outDir ?? path.join(process.cwd(), "exports"));
+  return path.resolve(outDir ?? path.join(process.cwd(), "chatgpt-exports"));
 }
 
 async function runExport(args: CliArgs): Promise<ConversationExportResult> {

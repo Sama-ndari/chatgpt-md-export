@@ -2,6 +2,7 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import type { ConversationAttachment } from "../chatgpt/types.js";
 import type { AttachmentSource } from "./attachment-source.js";
+import type { ProgressReporter } from "./progress.js";
 import { formatAttachmentFailure } from "./attachment-failure.js";
 import { sanitizeFileName } from "./slug.js";
 
@@ -24,6 +25,7 @@ export interface DownloadAttachmentsInput {
   attachments: ConversationAttachment[];
   filesDir: string;
   source: AttachmentSource;
+  onProgress?: ProgressReporter;
 }
 
 /**
@@ -41,7 +43,9 @@ export async function downloadAttachments(
   const failedReasons = new Map<string, string>();
   const relativePaths = new Map<string, string>();
 
+  const total = input.attachments.length;
   for (const attachment of input.attachments) {
+    input.onProgress?.({ stage: "attachments", completed: downloaded.length + failedKeys.size, total });
     try {
       const fetched = await input.source.fetch(attachment);
       const fileName = uniqueFileName(

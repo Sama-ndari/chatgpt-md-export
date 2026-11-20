@@ -1,7 +1,7 @@
 {
   "name": "chatgpt-md-export-vscode",
   "displayName": "ChatGPT Markdown Export",
-  "version": "0.2.0",
+  "version": "0.4.0",
   "description": "%extension.description%",
   "publisher": "samandari",
   "author": "Samandari",
@@ -41,35 +41,141 @@
       {
         "command": "chatgptMdExport.exportFromUrl",
         "title": "%command.exportFromUrl.title%",
-        "category": "%command.category%"
+        "category": "%command.category%",
+        "icon": "$(cloud-download)"
       },
       {
         "command": "chatgptMdExport.exportFromArchive",
         "title": "%command.exportFromArchive.title%",
-        "category": "%command.category%"
+        "category": "%command.category%",
+        "icon": "$(folder-opened)"
       },
       {
         "command": "chatgptMdExport.setToken",
         "title": "%command.setToken.title%",
-        "category": "%command.category%"
+        "category": "%command.category%",
+        "icon": "$(key)"
       },
       {
         "command": "chatgptMdExport.clearToken",
         "title": "%command.clearToken.title%",
-        "category": "%command.category%"
+        "category": "%command.category%",
+        "icon": "$(trash)"
       },
       {
         "command": "chatgptMdExport.preview",
         "title": "%command.preview.title%",
+        "category": "%command.category%",
+        "icon": "$(preview)"
+      },
+      {
+        "command": "chatgptMdExport.refresh",
+        "title": "%command.refresh.title%",
+        "category": "%command.category%",
+        "icon": "$(refresh)"
+      },
+      {
+        "command": "chatgptMdExport.openExport",
+        "title": "%command.openExport.title%",
         "category": "%command.category%"
+      },
+      {
+        "command": "chatgptMdExport.openMarkdown",
+        "title": "%command.openMarkdown.title%",
+        "category": "%command.category%",
+        "icon": "$(markdown)"
+      },
+      {
+        "command": "chatgptMdExport.revealFolder",
+        "title": "%command.revealFolder.title%",
+        "category": "%command.category%",
+        "icon": "$(folder)"
+      },
+      {
+        "command": "chatgptMdExport.forgetExport",
+        "title": "%command.forgetExport.title%",
+        "category": "%command.category%",
+        "icon": "$(close)"
+      },
+      {
+        "command": "chatgptMdExport.openTokenHelp",
+        "title": "%command.openTokenHelp.title%",
+        "category": "%command.category%",
+        "icon": "$(question)"
+      },
+      {
+        "command": "chatgptMdExport.rate",
+        "title": "%command.rate.title%",
+        "category": "%command.category%",
+        "icon": "$(star-empty)"
       }
     ],
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "chatgptMdExport",
+          "title": "%viewsContainer.title%",
+          "icon": "media/sidebar-icon.svg"
+        }
+      ]
+    },
+    "views": {
+      "chatgptMdExport": [
+        {
+          "id": "chatgptMdExport.sidebar",
+          "name": "%view.sidebar.name%",
+          "icon": "media/sidebar-icon.svg",
+          "type": "webview"
+        }
+      ]
+    },
+    "menus": {
+      "view/title": [
+        {
+          "command": "chatgptMdExport.exportFromArchive",
+          "when": "view == chatgptMdExport.sidebar",
+          "group": "navigation@1"
+        },
+        {
+          "command": "chatgptMdExport.exportFromUrl",
+          "when": "view == chatgptMdExport.sidebar",
+          "group": "navigation@2"
+        },
+        {
+          "command": "chatgptMdExport.rate",
+          "when": "view == chatgptMdExport.sidebar",
+          "group": "1_misc@1"
+        }
+      ],
+      "commandPalette": [
+        {
+          "command": "chatgptMdExport.openExport",
+          "when": "false"
+        },
+        {
+          "command": "chatgptMdExport.openMarkdown",
+          "when": "false"
+        },
+        {
+          "command": "chatgptMdExport.revealFolder",
+          "when": "false"
+        },
+        {
+          "command": "chatgptMdExport.forgetExport",
+          "when": "false"
+        },
+        {
+          "command": "chatgptMdExport.refresh",
+          "when": "false"
+        }
+      ]
+    },
     "configuration": {
       "title": "%configuration.title%",
       "properties": {
         "chatgptMdExport.outputDirectory": {
           "type": "string",
-          "default": "exports",
+          "default": "chatgpt-exports",
           "description": "%configuration.outputDirectory.description%"
         },
         "chatgptMdExport.authorName": {

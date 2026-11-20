@@ -8,6 +8,7 @@ import type { ChatgptConversation } from "../chatgpt/types.js";
 import { parseChatgptUrl, type ParsedChatgptUrl } from "../chatgpt/url-parser.js";
 import { AppError } from "../shared/errors.js";
 import { createApiAttachmentSource } from "./api-attachment-source.js";
+import type { ProgressReporter } from "./progress.js";
 import {
   writeConversationExport,
   type ConversationExportResult
@@ -19,6 +20,7 @@ export interface ExportFromUrlInput {
   outRoot: string;
   author?: string;
   skipAttachments?: boolean;
+  onProgress?: ProgressReporter;
   clientOptions?: ChatgptClientOptions;
   env?: NodeJS.ProcessEnv;
 }
@@ -28,6 +30,7 @@ export async function exportConversationFromUrl(
   input: ExportFromUrlInput
 ): Promise<ConversationExportResult> {
   const parsed = parseChatgptUrl(input.url);
+  input.onProgress?.({ stage: "reading" });
   const conversation = await fetchRemoteConversation(parsed, input.clientOptions);
 
   return writeConversationExport({
@@ -36,6 +39,7 @@ export async function exportConversationFromUrl(
     sourceUrl: parsed.sourceUrl,
     folderId: parsed.cacheId,
     author: resolveAuthor(input.author, input.clientOptions?.env ?? input.env),
+    onProgress: input.onProgress,
     attachments: input.skipAttachments
       ? undefined
       : createApiAttachmentSource({

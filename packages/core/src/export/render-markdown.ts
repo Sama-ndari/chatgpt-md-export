@@ -1,5 +1,5 @@
 import type { ExportMessage } from "../chatgpt/types.js";
-import { EXPORT_CREDIT } from "../shared/branding.js";
+import { EXPORT_CREDIT_MARKDOWN } from "../shared/branding.js";
 import { formatDate } from "../shared/format-date.js";
 
 export interface MarkdownHeaderInput {
@@ -56,7 +56,7 @@ export function renderConversationMarkdown(input: RenderMarkdownInput): string {
 
   lines.push("---");
   lines.push("");
-  lines.push(`*${EXPORT_CREDIT}*`);
+  lines.push(`*${EXPORT_CREDIT_MARKDOWN}*`);
   lines.push("");
 
   return lines.join("\n").trimEnd() + "\n";

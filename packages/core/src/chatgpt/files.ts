@@ -55,7 +55,7 @@ export async function resolveFileDownload(
       }
       return resolved;
     } catch (error) {
-      // Owner mismatch will fail on every endpoint — stop early.
+      // Owner mismatch will fail on every endpoint, so stop early.
       if (error instanceof AppError && error.error_code === "FILE_OWNER_MISMATCH") throw error;
       lastError =
         error instanceof AppError

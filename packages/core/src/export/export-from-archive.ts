@@ -5,6 +5,7 @@ import {
   summarizeArchive,
   type ChatgptExportArchive
 } from "../archive/read-archive.js";
+import type { ProgressReporter } from "./progress.js";
 import {
   writeConversationExport,
   type ConversationExportResult
@@ -18,12 +19,14 @@ export interface ExportFromArchiveInput {
   outRoot: string;
   author?: string;
   skipAttachments?: boolean;
+  onProgress?: ProgressReporter;
 }
 
 /** Write one conversation out of an unzipped official ChatGPT export. */
 export async function exportConversationFromArchive(
   input: ExportFromArchiveInput
 ): Promise<ConversationExportResult> {
+  input.onProgress?.({ stage: "reading" });
   const conversationId = input.conversationId ?? summarizeArchive(input.archive)[0]?.id;
   const conversation = conversationId
     ? findArchiveConversation(input.archive, conversationId)
@@ -35,6 +38,7 @@ export async function exportConversationFromArchive(
     sourceUrl: input.archive.conversationsFile,
     folderId: archiveConversationId(conversation),
     author: input.author?.trim() || "User",
+    onProgress: input.onProgress,
     attachments: input.skipAttachments
       ? undefined
       : createArchiveAttachmentSource(input.archive.rootDir)

@@ -267,6 +267,16 @@ body {
   border-top: 1px solid rgba(201, 213, 223, 0.9);
   text-align: center;
 }
+.export-credit a {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.export-credit a:hover {
+  color: var(--author-ink);
+}
+
 .export-credit p {
   margin: 0;
   color: var(--muted);
