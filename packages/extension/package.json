@@ -13,8 +13,7 @@
     "url": "https://github.com/Sama-ndari/chatgpt-md-export.git"
   },
   "categories": [
-    "Other",
-    "Notebooks"
+    "Other"
   ],
   "keywords": [
     "chatgpt",
@@ -28,6 +27,15 @@
   },
   "main": "./dist/extension.cjs",
   "activationEvents": [],
+  "capabilities": {
+    "untrustedWorkspaces": {
+      "supported": true
+    },
+    "virtualWorkspaces": {
+      "supported": false,
+      "description": "Exports are written to the local file system, which a virtual workspace does not provide."
+    }
+  },
   "contributes": {
     "commands": [
       {
@@ -103,5 +111,14 @@
   "devDependencies": {
     "@vscode/vsce": "^3.2.0"
   },
-  "l10n": "./l10n"
+  "l10n": "./l10n",
+  "qna": false,
+  "galleryBanner": {
+    "color": "#14212b",
+    "theme": "dark"
+  },
+  "bugs": {
+    "url": "https://github.com/Sama-ndari/chatgpt-md-export/issues"
+  },
+  "homepage": "https://github.com/Sama-ndari/chatgpt-md-export#readme"
 }

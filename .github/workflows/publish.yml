@@ -1,0 +1,28 @@
+name: Publish extension
+
+# Publishing runs on a version tag so the Marketplace version always matches a
+# commit. Trusted Publishing exchanges a GitHub OIDC token for a short-lived
+# Marketplace credential, so no Personal Access Token is stored in this repo.
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run check
+      - name: Publish to the Visual Studio Marketplace
+        working-directory: packages/extension
+        run: npx --yes @vscode/vsce@4 publish --oidc --no-dependencies
