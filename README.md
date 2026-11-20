@@ -117,10 +117,21 @@ lookup with `CHATGPT_MD_EXPORT_ENV_FILE`.
 ## Releasing the extension
 
 Publishing is automated. A tag starting with `v` triggers
-[`.github/workflows/publish.yml`](.github/workflows/publish.yml), which runs `npm run check`
-and then publishes to the Marketplace. Authentication uses Marketplace Trusted Publishing over
-GitHub OIDC, so there is no Personal Access Token anywhere in this repository.
-Azure DevOps retires global PATs on December 1, 2026.
+[`.github/workflows/publish.yml`](.github/workflows/publish.yml), which runs `npm run check`,
+packages the extension once, and sends that same archive to two registries:
+
+| Registry | Reaches | Authentication |
+| --- | --- | --- |
+| Visual Studio Marketplace | VS Code | Trusted Publishing over GitHub OIDC, no stored token |
+| Open VSX | Cursor, Windsurf, VSCodium | `OVSX_PAT` repository secret |
+
+Azure DevOps retires global PATs on December 1, 2026, which is why the Marketplace step uses
+OIDC. Open VSX has no OIDC support, so it needs a token. The Open VSX step is skipped while
+`OVSX_PAT` is unset, so a release never fails over a missing secret.
+
+Setting up Open VSX once: sign in at [open-vsx.org](https://open-vsx.org) with GitHub, sign the
+publisher agreement, create the `samandari` namespace, generate an access token, then store it as
+the `OVSX_PAT` secret under the repository's **Settings > Secrets and variables > Actions**.
 
 To cut a release, say `0.3.0`:
 
