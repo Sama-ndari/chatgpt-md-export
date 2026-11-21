@@ -109,4 +109,4 @@ See the [changelog](CHANGELOG.md).
 Source, issues and the CLI version of this tool:
 [github.com/Sama-ndari/chatgpt-md-export](https://github.com/Sama-ndari/chatgpt-md-export)
 
-Built by Samandari. MIT licensed.
+Built by [Samandari](https://samandari.dev). MIT licensed.

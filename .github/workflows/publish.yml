@@ -4,9 +4,11 @@ name: Publish extension
 # commit. The extension is packaged once and the same archive goes to both
 # registries, so VS Code and the forks that read Open VSX get identical bytes.
 #
-# The Visual Studio Marketplace uses Trusted Publishing: GitHub's OIDC token is
-# exchanged for a short-lived credential, so no Personal Access Token is stored
-# here. Open VSX has no OIDC support, so it needs the OVSX_PAT secret.
+# Both registries use Trusted Publishing: GitHub's OIDC token is exchanged for a
+# short-lived credential at publish time, so no Personal Access Token is stored
+# in this repository. Each registry matches the token against a registration
+# naming this repository and this workflow file, so renaming this file breaks
+# publishing until the registration is updated.
 on:
   push:
     tags:
@@ -33,11 +35,8 @@ jobs:
       - name: Publish to the Visual Studio Marketplace
         working-directory: packages/extension
         run: npx --yes @vscode/vsce@4 publish --oidc --packagePath extension.vsix
-      # Skipped until OVSX_PAT exists, so a release never fails over a missing
-      # secret. Open VSX feeds Cursor, Windsurf and VSCodium.
+      # Open VSX feeds Cursor, Windsurf and VSCodium, which cannot read the
+      # Visual Studio Marketplace.
       - name: Publish to Open VSX
-        if: ${{ secrets.OVSX_PAT != '' }}
         working-directory: packages/extension
-        env:
-          OVSX_PAT: ${{ secrets.OVSX_PAT }}
-        run: npx --yes ovsx@1 publish extension.vsix --pat "$OVSX_PAT"
+        run: npx --yes ovsx@1 publish extension.vsix --trusted-publishing

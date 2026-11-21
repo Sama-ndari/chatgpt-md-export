@@ -1,7 +1,7 @@
 {
   "name": "chatgpt-md-export-vscode",
   "displayName": "ChatGPT Markdown Export",
-  "version": "0.4.1",
+  "version": "0.4.2",
   "description": "%extension.description%",
   "publisher": "samandari",
   "author": "Samandari",
@@ -13,6 +13,7 @@
     "url": "https://github.com/Sama-ndari/chatgpt-md-export.git"
   },
   "categories": [
+    "AI",
     "Other"
   ],
   "keywords": [

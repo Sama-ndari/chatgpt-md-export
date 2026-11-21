@@ -122,16 +122,16 @@ packages the extension once, and sends that same archive to two registries:
 
 | Registry | Reaches | Authentication |
 | --- | --- | --- |
-| Visual Studio Marketplace | VS Code | Trusted Publishing over GitHub OIDC, no stored token |
-| Open VSX | Cursor, Windsurf, VSCodium | `OVSX_PAT` repository secret |
+| Visual Studio Marketplace | VS Code | Trusted Publishing over GitHub OIDC |
+| Open VSX | Cursor, Windsurf, VSCodium | Trusted Publishing over GitHub OIDC |
 
-Azure DevOps retires global PATs on December 1, 2026, which is why the Marketplace step uses
-OIDC. Open VSX has no OIDC support, so it needs a token. The Open VSX step is skipped while
-`OVSX_PAT` is unset, so a release never fails over a missing secret.
+Neither registry stores a credential in this repository. Each one holds a registration naming
+this repository and the workflow file, and exchanges the job's OIDC token for a credential that
+lives a few minutes. Azure DevOps retires global Personal Access Tokens on December 1, 2026, so
+OIDC is also the path that survives.
 
-Setting up Open VSX once: sign in at [open-vsx.org](https://open-vsx.org) with GitHub, sign the
-publisher agreement, create the `samandari` namespace, generate an access token, then store it as
-the `OVSX_PAT` secret under the repository's **Settings > Secrets and variables > Actions**.
+Renaming `publish.yml` breaks publishing on both registries until their registrations are
+updated, because the workflow filename is part of what they match.
 
 To cut a release, say `0.3.0`:
 
