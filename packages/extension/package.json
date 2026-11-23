@@ -1,7 +1,7 @@
 {
   "name": "chatgpt-md-export-vscode",
   "displayName": "ChatGPT Markdown Export",
-  "version": "0.6.0",
+  "version": "0.6.1",
   "description": "%extension.description%",
   "publisher": "samandari",
   "author": "Samandari",

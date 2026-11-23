@@ -25,7 +25,7 @@ or simply read it offline.
 ## Getting started
 
 Open the **ChatGPT Export** icon in the Activity Bar, on the left. Everything happens there:
-the two export buttons, your recent exports, and your token.
+the three export buttons, your recent exports, and your token.
 
 ### Without a token (recommended)
 
@@ -39,7 +39,7 @@ a conversation that cannot be read is reported at the end and the others still l
 
 ### From a project
 
-1. Click **Bearer token** in the sidebar, and paste your token.
+1. Under **Account** in the sidebar, click **Add token** and paste your token.
 2. Click **From a project**, and paste the project link, the one that ends in `/project`.
 3. Tick the conversations you want, then confirm.
 
@@ -48,8 +48,8 @@ but left unticked, so you do not export the same thread twice without meaning to
 
 ### From a conversation link
 
-1. Click **Bearer token** in the sidebar, and paste your token.
-2. Click **From a ChatGPT link**, and paste the conversation URL.
+1. Under **Account** in the sidebar, click **Add token** and paste your token.
+2. Click **From a conversation link**, and paste the conversation URL.
 
 Supports `/c/`, `/share/` and project links. Public `/share/` links need no token.
 

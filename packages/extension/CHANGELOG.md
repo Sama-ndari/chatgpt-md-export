@@ -4,6 +4,14 @@ All notable changes to the ChatGPT Markdown Export extension are documented here
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this
 project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.6.1] - 2026-11-23
+
+### Fixed
+
+- The readme told people to click buttons that do not exist. It said "the two export buttons"
+  from before the project card, and named a "Bearer token" button and a "From a ChatGPT link"
+  button, while the panel reads "Add token" under "Account" and "From a conversation link".
+
 ## [0.6.0] - 2026-11-23
 
 ### Added
