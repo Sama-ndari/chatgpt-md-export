@@ -4,12 +4,15 @@ export {
 export {
   ARCHIVE_CONVERSATIONS_FILE,
   archiveConversationId,
+  closeExportArchive,
   findArchiveConversation,
   readExportArchive,
   summarizeArchive,
   type ArchiveConversationSummary,
   type ChatgptExportArchive
 } from "./archive/read-archive.js";
+export { createZipAttachmentSource } from "./archive/zip-attachment-source.js";
+export { openZipArchive, type ZipArchive, type ZipEntry } from "./archive/zip-reader.js";
 export {
   createApiHeaders,
   getTokenInfo,
@@ -30,6 +33,7 @@ export type {
   ExportMessage,
   MessagePart
 } from "./chatgpt/types.js";
+export { assertConversationShape } from "./chatgpt/conversation-schema.js";
 export { parseChatgptUrl, type ParsedChatgptUrl } from "./chatgpt/url-parser.js";
 export { createApiAttachmentSource } from "./export/api-attachment-source.js";
 export type { AttachmentSource, FetchedAttachment } from "./export/attachment-source.js";
@@ -44,7 +48,11 @@ export {
 } from "./export/export-conversation.js";
 export {
   exportConversationFromArchive,
-  type ExportFromArchiveInput
+  exportConversationsFromArchive,
+  type BatchExportResult,
+  type ExportFromArchiveInput,
+  type ExportManyFromArchiveInput,
+  type FailedConversationExport
 } from "./export/export-from-archive.js";
 export {
   exportConversationFromUrl,

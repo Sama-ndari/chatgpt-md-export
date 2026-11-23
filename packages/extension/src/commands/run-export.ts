@@ -1,5 +1,5 @@
 import * as vscode from "vscode";
-import type { ConversationExportResult, ExportProgress, ProgressReporter } from "@chatgpt-md-export/core";
+import type { ExportProgress, ProgressReporter } from "@chatgpt-md-export/core";
 import { setBusy } from "../ui/busy.js";
 
 type ProgressHandle = vscode.Progress<{ message?: string; increment?: number }>;
@@ -8,10 +8,10 @@ type ProgressHandle = vscode.Progress<{ message?: string; increment?: number }>;
  * Runs an export behind a notification and the panel's busy strip, forwarding
  * core progress to both so a long attachment download never looks frozen.
  */
-export async function runExport(
+export async function runExport<T>(
   title: string,
-  task: (report: ProgressReporter) => Promise<ConversationExportResult>
-): Promise<ConversationExportResult> {
+  task: (report: ProgressReporter) => Promise<T>
+): Promise<T> {
   setBusy({ active: true, message: title });
   try {
     return await vscode.window.withProgress(
@@ -30,11 +30,23 @@ function publish(progress: ProgressHandle, title: string, update: ExportProgress
 }
 
 function describe(update: ExportProgress): string {
-  if (update.stage === "reading") return vscode.l10n.t("Reading the conversation...");
-  if (update.stage === "writing") return vscode.l10n.t("Writing files...");
-  return vscode.l10n.t(
-    "Attachment {0} of {1}...",
-    String(update.completed + 1),
-    String(update.total)
-  );
+  switch (update.stage) {
+    case "reading":
+      return vscode.l10n.t("Reading the conversation...");
+    case "writing":
+      return vscode.l10n.t("Writing files...");
+    case "conversation":
+      return vscode.l10n.t(
+        "{0} of {1}: {2}",
+        String(update.completed + 1),
+        String(update.total),
+        update.title
+      );
+    default:
+      return vscode.l10n.t(
+        "Attachment {0} of {1}...",
+        String(update.completed + 1),
+        String(update.total)
+      );
+  }
 }

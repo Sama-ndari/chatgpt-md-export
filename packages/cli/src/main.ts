@@ -2,6 +2,7 @@
 import path from "node:path";
 import {
   AppError,
+  closeExportArchive,
   exportConversationFromArchive,
   exportConversationFromUrl,
   readExportArchive,
@@ -31,7 +32,11 @@ async function main(): Promise<void> {
 
   if (args.archivePath && args.listOnly) {
     const archive = await readExportArchive(args.archivePath);
-    process.stdout.write(formatArchiveListing(summarizeArchive(archive)));
+    try {
+      process.stdout.write(formatArchiveListing(summarizeArchive(archive)));
+    } finally {
+      await closeExportArchive(archive);
+    }
     return;
   }
 
@@ -46,13 +51,18 @@ async function runExport(args: CliArgs): Promise<ConversationExportResult> {
   const outRoot = resolveOutRoot(args.outDir);
 
   if (args.archivePath) {
-    return exportConversationFromArchive({
-      archive: await readExportArchive(args.archivePath),
-      conversationId: args.conversationId,
-      outRoot,
-      author: args.author,
-      skipAttachments: args.skipFiles
-    });
+    const archive = await readExportArchive(args.archivePath);
+    try {
+      return await exportConversationFromArchive({
+        archive,
+        conversationId: args.conversationId,
+        outRoot,
+        author: args.author,
+        skipAttachments: args.skipFiles
+      });
+    } finally {
+      await closeExportArchive(archive);
+    }
   }
 
   if (!args.url) {

@@ -2,12 +2,13 @@ import { cliBanner } from "./package-meta.js";
 
 export const USAGE = `Usage:
   chatgpt-md-export <chatgpt-url> [options]
-  chatgpt-md-export --archive <export-folder> [--conversation <id>] [options]
-  chatgpt-md-export --archive <export-folder> --list
+  chatgpt-md-export --archive <export.zip|folder> [--conversation <id>] [options]
+  chatgpt-md-export --archive <export.zip|folder> --list
 
 Sources:
   <chatgpt-url>            /c/, /share/, /share/e/, or /g/<project>/c/ URL (needs a bearer token)
-  --archive <path>         Unzipped official ChatGPT data export, or its conversations.json
+  --archive <path>         Official ChatGPT data export: the .zip, the unzipped folder,
+                           or its conversations.json
 
 Options:
   -o, --out <dir>          Output root directory (default: ./chatgpt-exports)
@@ -20,7 +21,7 @@ Options:
 
 Examples:
   chatgpt-md-export "https://chatgpt.com/c/<id>" -a "Sam"
-  chatgpt-md-export --archive ~/Downloads/chatgpt-export --list
+  chatgpt-md-export --archive ~/Downloads/chatgpt-export.zip --list
   chatgpt-md-export --archive ~/Downloads/chatgpt-export -c <conversation-id>
 `;
 

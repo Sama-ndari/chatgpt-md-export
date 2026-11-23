@@ -4,6 +4,24 @@ All notable changes to the ChatGPT Markdown Export extension are documented here
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this
 project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.5.0] - 2026-11-23
+
+### Added
+
+- Export several conversations in one run. The archive picker now takes as many ticks as you
+  want, and a conversation that cannot be read is reported at the end instead of stopping the
+  others.
+- Read the ChatGPT data export straight from its `.zip`. Unzipping first is no longer needed,
+  on either the extension or the CLI. The reader handles zip64, so a multi gigabyte export
+  works, and attachments are pulled out of the archive without extracting it.
+
+### Changed
+
+- When ChatGPT's private API returns a shape the extension does not understand, link mode now
+  says the format changed and points at the data export, rather than failing further down with
+  an unrelated error.
+- The readme shows the panel.
+
 ## [0.4.2] - 2026-11-21
 
 ### Added

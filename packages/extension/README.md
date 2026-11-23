@@ -7,6 +7,8 @@ or simply read it offline.
 
 > Unofficial. Not affiliated with OpenAI.
 
+![The ChatGPT Export panel in the Activity Bar](https://raw.githubusercontent.com/Sama-ndari/chatgpt-md-export/main/packages/extension/media/screenshots/panel.png)
+
 ## Features
 
 - **Clean Markdown.** One file, plain `## Author` / `## Assistant` headings, ready for any model.
@@ -14,6 +16,8 @@ or simply read it offline.
 - **Attachments included.** Images and documents are saved next to the Markdown, with working links.
 - **Raw JSON.** The untouched payload, in case you need a field the Markdown drops.
 - **Two sources.** Your official ChatGPT data export, or a live conversation link.
+- **No unzipping.** Point at the `.zip` ChatGPT emails you and it is read in place.
+- **Export in bulk.** Tick as many conversations as you want and write them all in one run.
 - **Safe token storage.** Your bearer token goes to the OS keychain, never to a file.
 
 ## Getting started
@@ -24,11 +28,12 @@ the two export buttons, your recent exports, and your token.
 ### Without a token (recommended)
 
 1. In ChatGPT, go to **Settings → Data controls → Export data**, and confirm.
-2. Unzip the archive you get by email.
-3. Click **From your ChatGPT data export**, select the unzipped folder.
-4. Pick a conversation from the list.
+2. Click **From your data export**, and select the `.zip` you get by email. An already
+   unzipped folder works too.
+3. Tick one conversation, or as many as you want, and confirm.
 
-This works for everyone and exports attachments straight from the archive.
+This works for everyone and exports attachments straight from the archive. In a bulk run,
+a conversation that cannot be read is reported at the end and the others still land.
 
 ### From a conversation link
 
@@ -87,8 +92,9 @@ VS Code 1.90 or later. Nothing else to install.
 
 ## Known limitations
 
-- The ChatGPT data export must be unzipped first. Point the extension at the folder, not the `.zip`.
-- Link mode uses chatgpt.com's private API. It can change without notice, and the token expires.
+- Link mode uses chatgpt.com's private API. It can change without notice, and the token
+  expires. When the format changes, the extension says so and points you at the data export
+  instead of failing with a cryptic error.
 - Attachments uploaded by another account cannot be downloaded, by design.
 
 ## Rate it

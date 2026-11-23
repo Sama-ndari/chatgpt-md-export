@@ -2,6 +2,7 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import type { ChatgptConversation } from "../chatgpt/types.js";
 import { AppError } from "../shared/errors.js";
+import { openZipArchive, type ZipArchive } from "./zip-reader.js";
 
 export const ARCHIVE_CONVERSATIONS_FILE = "conversations.json";
 
@@ -10,6 +11,8 @@ export interface ChatgptExportArchive {
   rootDir: string;
   conversationsFile: string;
   conversations: ChatgptConversation[];
+  /** Set when the export was read straight from a .zip, which stays open. */
+  zip?: ZipArchive;
 }
 
 export interface ArchiveConversationSummary {
@@ -21,25 +24,72 @@ export interface ArchiveConversationSummary {
 }
 
 /**
- * Read an unzipped ChatGPT data export. `archivePath` may point at the export
- * directory or directly at its conversations.json.
+ * Read a ChatGPT data export. `archivePath` may point at the downloaded .zip,
+ * at the unzipped export directory, or directly at its conversations.json.
  */
 export async function readExportArchive(archivePath: string): Promise<ChatgptExportArchive> {
-  const conversationsFile = await resolveConversationsFile(archivePath);
+  const resolved = path.resolve(archivePath);
+  if (path.extname(resolved).toLowerCase() === ".zip") {
+    return await readZippedArchive(resolved);
+  }
+
+  const conversationsFile = await resolveConversationsFile(resolved);
   const raw = await readJsonFile(conversationsFile);
-  if (!Array.isArray(raw)) {
+  return {
+    rootDir: path.dirname(conversationsFile),
+    conversationsFile,
+    conversations: parseConversations(raw, conversationsFile)
+  };
+}
+
+/** Release the zip file handle, if this archive was read from a .zip. */
+export async function closeExportArchive(archive: ChatgptExportArchive): Promise<void> {
+  await archive.zip?.close();
+}
+
+async function readZippedArchive(zipPath: string): Promise<ChatgptExportArchive> {
+  const zip = await openZipArchive(zipPath);
+  try {
+    const entry = findConversationsEntry(zip);
+    const conversationsFile = `${zipPath}${path.sep}${entry.name}`;
+    const raw = parseJson((await zip.read(entry)).toString("utf8"), conversationsFile);
+    return {
+      rootDir: zipPath,
+      conversationsFile,
+      conversations: parseConversations(raw, conversationsFile),
+      zip
+    };
+  } catch (error) {
+    await zip.close();
+    throw error;
+  }
+}
+
+function findConversationsEntry(zip: ZipArchive) {
+  const matches = zip.entries
+    .filter((entry) => path.posix.basename(entry.name) === ARCHIVE_CONVERSATIONS_FILE)
+    .sort((left, right) => left.name.split("/").length - right.name.split("/").length);
+
+  const entry = matches[0];
+  if (!entry) {
     throw new AppError(
       "ARCHIVE_INVALID",
-      `${conversationsFile} must contain a JSON array of conversations.`
+      `${zip.filePath} does not contain ${ARCHIVE_CONVERSATIONS_FILE}. Is it the ChatGPT data export?`
     );
+  }
+  return entry;
+}
+
+function parseConversations(raw: unknown, source: string): ChatgptConversation[] {
+  if (!Array.isArray(raw)) {
+    throw new AppError("ARCHIVE_INVALID", `${source} must contain a JSON array of conversations.`);
   }
 
   const conversations = raw.filter(isConversationLike).map(normalizeArchiveConversation);
   if (conversations.length === 0) {
-    throw new AppError("ARCHIVE_INVALID", `${conversationsFile} contains no readable conversation.`);
+    throw new AppError("ARCHIVE_INVALID", `${source} contains no readable conversation.`);
   }
-
-  return { rootDir: path.dirname(conversationsFile), conversationsFile, conversations };
+  return conversations;
 }
 
 /** Listing data for a conversation picker, newest activity first. */
@@ -83,12 +133,6 @@ async function resolveConversationsFile(archivePath: string): Promise<string> {
     await statOrThrow(candidate);
     return candidate;
   }
-  if (path.extname(resolved).toLowerCase() === ".zip") {
-    throw new AppError(
-      "ARCHIVE_NOT_FOUND",
-      `${resolved} is a zip archive. Unzip the ChatGPT export first, then point at the extracted folder.`
-    );
-  }
   return resolved;
 }
 
@@ -110,12 +154,16 @@ async function readJsonFile(filePath: string): Promise<unknown> {
       `Could not read ${filePath}: ${error instanceof Error ? error.message : String(error)}`
     );
   }
+  return parseJson(text, filePath);
+}
+
+function parseJson(text: string, source: string): unknown {
   try {
     return JSON.parse(text) as unknown;
   } catch (error) {
     throw new AppError(
       "ARCHIVE_INVALID",
-      `${filePath} is not valid JSON: ${error instanceof Error ? error.message : String(error)}`
+      `${source} is not valid JSON: ${error instanceof Error ? error.message : String(error)}`
     );
   }
 }

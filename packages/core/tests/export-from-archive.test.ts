@@ -2,7 +2,10 @@ import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { afterEach, describe, expect, it } from "vitest";
-import { exportConversationFromArchive } from "../src/export/export-from-archive.js";
+import {
+  exportConversationFromArchive,
+  exportConversationsFromArchive
+} from "../src/export/export-from-archive.js";
 import { readExportArchive, summarizeArchive } from "../src/archive/read-archive.js";
 import { AppError } from "../src/shared/errors.js";
 
@@ -71,6 +74,46 @@ describe("export from an official ChatGPT archive", () => {
     if (tempDir) await fs.rm(tempDir, { recursive: true, force: true });
   });
 
+  it("exports several conversations in one batch and reports progress per item", async () => {
+    const fixture = await writeArchive();
+    tempDir = fixture.tempDir;
+    const archive = await readExportArchive(fixture.archiveDir);
+    const seen: string[] = [];
+
+    const batch = await exportConversationsFromArchive({
+      archive,
+      conversationIds: ["conv-new", "conv-old"],
+      outRoot: fixture.outRoot,
+      onProgress: (update) => {
+        if (update.stage === "conversation") seen.push(`${update.completed + 1}/${update.total}`);
+      }
+    });
+
+    expect(batch.failures).toEqual([]);
+    expect(batch.exports.map((entry) => entry.title)).toEqual(["Newer chat", "Older chat"]);
+    expect(seen).toEqual(["1/2", "2/2"]);
+    for (const entry of batch.exports) {
+      await expect(fs.stat(entry.markdownPath)).resolves.toBeDefined();
+    }
+  });
+
+  it("keeps going when one conversation of a batch is missing", async () => {
+    const fixture = await writeArchive();
+    tempDir = fixture.tempDir;
+    const archive = await readExportArchive(fixture.archiveDir);
+
+    const batch = await exportConversationsFromArchive({
+      archive,
+      conversationIds: ["conv-new", "conv-does-not-exist"],
+      outRoot: fixture.outRoot
+    });
+
+    expect(batch.exports).toHaveLength(1);
+    expect(batch.failures).toHaveLength(1);
+    expect(batch.failures[0]?.conversationId).toBe("conv-does-not-exist");
+    expect(batch.failures[0]?.reason).toMatch(/not present/);
+  });
+
   it("lists conversations newest first and reads default_model_slug", async () => {
     const fixture = await writeArchive();
     tempDir = fixture.tempDir;
@@ -113,14 +156,14 @@ describe("export from an official ChatGPT archive", () => {
     expect(markdown).toContain("Attachment missing from the export archive");
   });
 
-  it("rejects a zip path with an actionable error", async () => {
+  it("says so when a .zip path is not a zip at all", async () => {
     const fixture = await writeArchive();
     tempDir = fixture.tempDir;
     const zipPath = path.join(fixture.archiveDir, "export.zip");
     await fs.writeFile(zipPath, "not really a zip", "utf8");
 
     await expect(readExportArchive(zipPath)).rejects.toMatchObject({
-      error_code: "ARCHIVE_NOT_FOUND"
+      error_code: "ARCHIVE_INVALID"
     });
     await expect(readExportArchive(zipPath)).rejects.toBeInstanceOf(AppError);
   });

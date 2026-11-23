@@ -21,8 +21,9 @@ Goal: hand the Markdown + `files/` to another model, without re-scraping the UI.
 ## Two ways to export
 
 **Official archive, no token required.** Request your data in ChatGPT (*Settings → Data controls →
-Export data*), unzip what you receive, and point the tool at the folder. Works for everyone,
-exports attachments from the archive itself.
+Export data*) and point the tool at the `.zip` you receive, or at an unzipped folder. Works for
+everyone, exports attachments from the archive itself, and the extension can write several
+conversations in one run.
 
 **Live URL, bearer token required.** Copy the `Authorization` header value from a signed-in
 `chatgpt.com` request. Supports `/c/`, `/share/`, `/share/e/`, and project conversations.
@@ -34,9 +35,9 @@ Public `/share/` links work without a token.
 npm install
 npm run build
 
-# From an unzipped official export
-node packages/cli/dist/main.js --archive ~/Downloads/chatgpt-export --list
-node packages/cli/dist/main.js --archive ~/Downloads/chatgpt-export -c <conversation-id>
+# From the official export, zipped or unzipped
+node packages/cli/dist/main.js --archive ~/Downloads/chatgpt-export.zip --list
+node packages/cli/dist/main.js --archive ~/Downloads/chatgpt-export.zip -c <conversation-id>
 
 # From a live URL
 cp .env.example .env     # then paste CHATGPT_BEARER_TOKEN

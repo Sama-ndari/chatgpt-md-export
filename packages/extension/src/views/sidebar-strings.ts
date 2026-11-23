@@ -9,7 +9,7 @@ export function sidebarStrings(): Record<string, string> {
     ),
     newExport: vscode.l10n.t("New export"),
     archiveTitle: vscode.l10n.t("From your data export"),
-    archiveNote: vscode.l10n.t("Point at the unzipped folder ChatGPT emailed you."),
+    archiveNote: vscode.l10n.t("Point at the .zip ChatGPT emailed you, or its unzipped folder."),
     recommended: vscode.l10n.t("No token needed"),
     urlTitle: vscode.l10n.t("From a conversation link"),
     urlNote: vscode.l10n.t("Paste a /c/, /share/ or project link."),

@@ -1,6 +1,8 @@
 import * as vscode from "vscode";
 import {
+  closeExportArchive,
   exportConversationFromArchive,
+  exportConversationsFromArchive,
   formatDate,
   readExportArchive,
   summarizeArchive,
@@ -9,6 +11,7 @@ import {
 } from "@chatgpt-md-export/core";
 import { readConfig, resolveOutputRoot } from "../config.js";
 import type { ExportHistory } from "../exports-history.js";
+import { finishBatchExport } from "./finish-batch-export.js";
 import { finishExport } from "./finish-export.js";
 import { runExport } from "./run-export.js";
 
@@ -16,50 +19,80 @@ interface ConversationPick extends vscode.QuickPickItem {
   conversationId: string;
 }
 
-/** Export one conversation out of an unzipped official ChatGPT data export. */
+/** Export one or more conversations from the official ChatGPT data export. */
 export async function exportFromArchive(input: { history: ExportHistory }): Promise<void> {
-  const archivePath = await pickArchiveFolder();
+  const archivePath = await pickArchiveSource();
   if (!archivePath) return;
 
   const archive = await readExportArchive(archivePath);
-  const conversationId = await pickConversation(archive);
-  if (!conversationId) return;
+  try {
+    const conversationIds = await pickConversations(archive);
+    if (conversationIds.length === 0) return;
 
-  const config = readConfig();
-  const result = await runExport(vscode.l10n.t("Exporting from the archive"), (onProgress) =>
-    exportConversationFromArchive({
+    const config = readConfig();
+    const shared = {
       archive,
-      conversationId,
       outRoot: resolveOutputRoot(config),
       author: config.authorName,
-      skipAttachments: !config.downloadAttachments,
-      onProgress
-    })
-  );
+      skipAttachments: !config.downloadAttachments
+    };
 
-  await finishExport({ result, config, history: input.history });
+    if (conversationIds.length === 1) {
+      const result = await runExport(vscode.l10n.t("Exporting from the archive"), (onProgress) =>
+        exportConversationFromArchive({ ...shared, conversationId: conversationIds[0], onProgress })
+      );
+      await finishExport({ result, config, history: input.history });
+      return;
+    }
+
+    const batch = await runExport(
+      vscode.l10n.t("Exporting {0} conversations", String(conversationIds.length)),
+      (onProgress) => exportConversationsFromArchive({ ...shared, conversationIds, onProgress })
+    );
+    await finishBatchExport({ batch, config, history: input.history });
+  } finally {
+    await closeExportArchive(archive);
+  }
 }
 
-async function pickArchiveFolder(): Promise<string | undefined> {
+/**
+ * Ask for the downloaded .zip or the unzipped folder. Windows cannot offer
+ * both in one dialog, so there the kind is chosen first.
+ */
+async function pickArchiveSource(): Promise<string | undefined> {
+  const zipOnly = process.platform === "win32" ? await askForZip() : undefined;
+  if (zipOnly === undefined && process.platform === "win32") return undefined;
+
   const picked = await vscode.window.showOpenDialog({
-    title: vscode.l10n.t("Select the unzipped ChatGPT export folder"),
-    openLabel: vscode.l10n.t("Use this folder"),
-    canSelectFiles: false,
-    canSelectFolders: true,
-    canSelectMany: false
+    title: vscode.l10n.t("Select the ChatGPT data export (.zip or unzipped folder)"),
+    openLabel: vscode.l10n.t("Use this export"),
+    canSelectFiles: zipOnly ?? true,
+    canSelectFolders: zipOnly === undefined ? true : !zipOnly,
+    canSelectMany: false,
+    filters: zipOnly === false ? undefined : { [vscode.l10n.t("ChatGPT export")]: ["zip"] }
   });
   return picked?.[0]?.fsPath;
 }
 
-async function pickConversation(archive: ChatgptExportArchive): Promise<string | undefined> {
+async function askForZip(): Promise<boolean | undefined> {
+  const zipLabel = vscode.l10n.t("The downloaded .zip file");
+  const folderLabel = vscode.l10n.t("An unzipped export folder");
+  const choice = await vscode.window.showQuickPick([zipLabel, folderLabel], {
+    title: vscode.l10n.t("Where is your ChatGPT data export?")
+  });
+  return choice === undefined ? undefined : choice === zipLabel;
+}
+
+async function pickConversations(archive: ChatgptExportArchive): Promise<string[]> {
   const summaries = summarizeArchive(archive);
   const picked = await vscode.window.showQuickPick<ConversationPick>(summaries.map(toPick), {
     title: vscode.l10n.t("{0} conversations in this archive", String(summaries.length)),
-    placeHolder: vscode.l10n.t("Filter by title…"),
+    placeHolder: vscode.l10n.t("Filter by title, pick as many as you want"),
     matchOnDescription: true,
-    ignoreFocusOut: true
+    ignoreFocusOut: true,
+    canPickMany: true
   });
-  return picked?.conversationId;
+  return (picked ?? []).map((item) => item.conversationId);
 }
 
 function toPick(summary: ArchiveConversationSummary): ConversationPick {

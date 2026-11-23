@@ -1,6 +1,7 @@
 import type { ChatgptConversation } from "./types.js";
 import { createApiHeaders, getTokenInfo } from "./auth.js";
 import { AppError } from "../shared/errors.js";
+import { assertConversationShape } from "./conversation-schema.js";
 import { normalizeSharedConversation, type SharedConversationPayload } from "./shared-conversation.js";
 
 const API_BASE = "https://chatgpt.com/backend-api";
@@ -36,7 +37,9 @@ export async function fetchPrivateConversation(
     throw new AppError("REMOTE_REQUEST_FAILED", `ChatGPT request failed (${response.status} ${response.statusText}).`);
   }
 
-  return response.json() as Promise<ChatgptConversation>;
+  const conversation = (await response.json()) as unknown;
+  assertConversationShape(conversation, `conversation ${conversationId}`);
+  return conversation;
 }
 
 export async function fetchSharedConversation(
@@ -70,7 +73,9 @@ export async function fetchSharedConversation(
   }
 
   const payload = (await response.json()) as SharedConversationPayload;
-  return normalizeSharedConversation(payload, shareId, cacheId);
+  const conversation = normalizeSharedConversation(payload, shareId, cacheId);
+  assertConversationShape(conversation, `shared conversation ${shareId}`);
+  return conversation;
 }
 
 export interface ProjectConversationRef {
@@ -169,6 +174,7 @@ async function runProjectFetchAttempt(input: {
   const payload = (await response.json()) as SharedConversationPayload;
   try {
     const conversation = normalizeSharedConversation(payload, ref.conversationId, ref.conversationId);
+    assertConversationShape(conversation, `project conversation ${ref.conversationId}`);
     return { conversation, truncated: isProjectPayloadTruncated(payload, conversation.mapping) };
   } catch (error) {
     if (error instanceof AppError) return { error };

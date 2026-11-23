@@ -12,6 +12,12 @@ export default defineConfig({
       "@chatgpt-md-export/core": path.resolve(
         import.meta.dirname,
         "packages/core/src/index.ts"
+      ),
+      // The real "vscode" module only exists inside a running editor, so the
+      // extension's pure logic is tested against a stub of the API it uses.
+      vscode: path.resolve(
+        import.meta.dirname,
+        "packages/extension/tests/vscode-stub.ts"
       )
     }
   }
