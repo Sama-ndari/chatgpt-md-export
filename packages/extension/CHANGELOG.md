@@ -4,6 +4,16 @@ All notable changes to the ChatGPT Markdown Export extension are documented here
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this
 project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.6.0] - 2026-11-23
+
+### Added
+
+- Export a whole ChatGPT project. Paste the project link, tick the conversations you want, and
+  they are written in one run. Forked conversations, which ChatGPT names `Branch ...`, are
+  listed but left unticked so the same thread is not exported twice by accident.
+- The panel now says how many days the stored token has left, and an export stops with a plain
+  "your token expired, paste a fresh one" instead of letting ChatGPT answer 401.
+
 ## [0.5.0] - 2026-11-23
 
 ### Added

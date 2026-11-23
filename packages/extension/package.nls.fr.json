@@ -3,6 +3,7 @@
   "command.category": "Export ChatGPT",
   "command.exportFromUrl.title": "Exporter une conversation depuis une URL",
   "command.exportFromArchive.title": "Exporter une conversation depuis l'archive officielle",
+  "command.exportFromProject.title": "Exporter tout un projet ChatGPT",
   "command.setToken.title": "Définir le jeton d'accès",
   "command.clearToken.title": "Supprimer le jeton d'accès",
   "command.preview.title": "Afficher le dernier export",

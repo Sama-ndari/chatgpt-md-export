@@ -34,6 +34,12 @@ export type {
   MessagePart
 } from "./chatgpt/types.js";
 export { assertConversationShape } from "./chatgpt/conversation-schema.js";
+export {
+  listProjectConversations,
+  type ListProjectConversationsInput,
+  type ProjectConversationSummary
+} from "./chatgpt/project-conversations.js";
+export { parseProjectId } from "./chatgpt/project-url.js";
 export { parseChatgptUrl, type ParsedChatgptUrl } from "./chatgpt/url-parser.js";
 export { createApiAttachmentSource } from "./export/api-attachment-source.js";
 export type { AttachmentSource, FetchedAttachment } from "./export/attachment-source.js";
@@ -54,6 +60,10 @@ export {
   type ExportManyFromArchiveInput,
   type FailedConversationExport
 } from "./export/export-from-archive.js";
+export {
+  exportConversationsFromProject,
+  type ExportProjectInput
+} from "./export/export-from-project.js";
 export {
   exportConversationFromUrl,
   type ExportFromUrlInput

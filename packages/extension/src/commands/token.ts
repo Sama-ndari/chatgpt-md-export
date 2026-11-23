@@ -1,6 +1,7 @@
 import * as vscode from "vscode";
 import { TOKEN_SESSION_URL } from "../links.js";
 import type { TokenStore } from "../secrets.js";
+import { describeToken } from "../token-status.js";
 import { closeButton, promptInput } from "../ui/prompt-input.js";
 
 /** Opens the ChatGPT session endpoint, where the token can be copied directly. */
@@ -22,10 +23,16 @@ export async function clearToken(tokens: TokenStore): Promise<void> {
   void vscode.window.showInformationMessage(vscode.l10n.t("ChatGPT token removed."));
 }
 
-/** Returns a stored token, offering to capture one when none is present. */
+/**
+ * Returns a usable token, offering to capture one when it is missing or stale.
+ * Expiry is checked locally first, so the user reads "your token expired"
+ * instead of a bare 401 from ChatGPT.
+ */
 export async function requireToken(tokens: TokenStore): Promise<string | undefined> {
   const existing = await tokens.read();
-  if (existing) return existing;
+  const status = describeToken(existing);
+  if (existing && status.kind !== "expired") return existing;
+  if (status.kind === "expired") return replaceExpiredToken(tokens, status.label);
 
   const setLabel = vscode.l10n.t("Set token");
   const helpLabel = vscode.l10n.t("Get my token");
@@ -37,6 +44,24 @@ export async function requireToken(tokens: TokenStore): Promise<string | undefin
   if (choice === helpLabel) await openTokenHelp();
   if (choice === setLabel) return setToken(tokens);
   return undefined;
+}
+
+async function replaceExpiredToken(
+  tokens: TokenStore,
+  label: string
+): Promise<string | undefined> {
+  const updateLabel = vscode.l10n.t("Update token");
+  const helpLabel = vscode.l10n.t("Get my token");
+  const choice = await vscode.window.showWarningMessage(
+    vscode.l10n.t("{0} Paste a fresh one to continue.", label),
+    updateLabel,
+    helpLabel
+  );
+  if (choice === helpLabel) {
+    await openTokenHelp();
+    return undefined;
+  }
+  return choice === updateLabel ? setToken(tokens) : undefined;
 }
 
 function promptForToken(): Promise<string | undefined> {

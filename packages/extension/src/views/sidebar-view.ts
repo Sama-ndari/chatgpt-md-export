@@ -1,5 +1,6 @@
 import * as vscode from "vscode";
 import { describeOutputRoot, readConfig } from "../config.js";
+import { describeToken } from "../token-status.js";
 import type { ExportHistory, ExportRecord } from "../exports-history.js";
 import type { RatingPrompt } from "../rating-prompt.js";
 import type { TokenStore } from "../secrets.js";
@@ -16,6 +17,7 @@ interface WebviewMessage {
 const ACTION_COMMANDS: Record<string, string> = {
   exportUrl: "chatgptMdExport.exportFromUrl",
   exportArchive: "chatgptMdExport.exportFromArchive",
+  exportProject: "chatgptMdExport.exportFromProject",
   setToken: "chatgptMdExport.setToken",
   clearToken: "chatgptMdExport.clearToken",
   tokenHelp: "chatgptMdExport.openTokenHelp",
@@ -60,10 +62,13 @@ export class SidebarViewProvider implements vscode.WebviewViewProvider {
 
   async refresh(): Promise<void> {
     if (!this.view) return;
+    const token = describeToken(await this.tokens.read());
     await this.view.webview.postMessage({
       type: "state",
       payload: {
-        hasToken: Boolean(await this.tokens.read()),
+        hasToken: token.kind !== "missing",
+        tokenState: token.kind,
+        tokenLabel: token.label,
         exports: this.history.list().map(toViewModel),
         outputRoot: describeOutputRoot(readConfig()),
         showRating: this.rating.shouldAsk(this.history.list().length),

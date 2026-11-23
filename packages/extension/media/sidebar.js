@@ -18,6 +18,8 @@
       '<svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><path d="M1.5 3.25C1.5 2.56 2.06 2 2.75 2h3.1c.4 0 .78.19 1.01.52l.6.83c.05.06.12.1.2.1h5.69c.69 0 1.25.56 1.25 1.25v7.55c0 .69-.56 1.25-1.25 1.25H2.75c-.69 0-1.25-.56-1.25-1.25z"/></svg>',
     close:
       '<svg width="13" height="13" viewBox="0 0 16 16" fill="currentColor"><path d="M4.3 3.3 8 7l3.7-3.7.7.7L8.7 7.7l3.7 3.7-.7.7L8 8.4l-3.7 3.7-.7-.7 3.7-3.7L3.6 4z"/></svg>',
+    project:
+      '<svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M2.75 2h4.1c.4 0 .78.19 1.01.52l.6.83c.05.06.12.1.2.1h4.59c.69 0 1.25.56 1.25 1.25v8.05c0 .69-.56 1.25-1.25 1.25H2.75c-.69 0-1.25-.56-1.25-1.25V3.25C1.5 2.56 2.06 2 2.75 2m0 1.25v9.5h10.5V4.7H8.66c-.4 0-.78-.2-1.01-.52l-.6-.84a.25.25 0 0 0-.2-.09zM4.5 6.5h7v1.2h-7zm0 2.6h7v1.2h-7z"/></svg>',
     star: '<svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M8 1.6l1.9 3.9 4.3.6-3.1 3 .74 4.3L8 11.4l-3.84 2 .73-4.3-3.1-3 4.3-.6z"/></svg>'
   };
 
@@ -94,13 +96,13 @@
 
   function tokenSection() {
     const t = state.text;
-    const label = state.hasToken ? t.tokenSet : t.tokenMissing;
+    const label = state.tokenLabel || (state.hasToken ? t.tokenSet : t.tokenMissing);
     const primary = state.hasToken
       ? `<button class="btn secondary" data-action="clearToken">${escapeHtml(t.removeToken)}</button>`
       : `<button class="btn" data-action="setToken">${escapeHtml(t.addToken)}</button>`;
     return `<section>
       <h2 class="section-title">${escapeHtml(t.account)}</h2>
-      <div class="token ${state.hasToken ? "is-set" : ""}">
+      <div class="token ${state.tokenState === "valid" ? "is-set" : ""} ${state.tokenState === "expired" ? "is-stale" : ""}">
         <span class="dot"></span>
         <span class="token-label">${escapeHtml(label)}</span>
       </div>
@@ -150,6 +152,12 @@
           title: t.archiveTitle,
           note: t.archiveNote,
           badge: t.recommended
+        })}
+        ${card({
+          action: "exportProject",
+          icon: ICONS.project,
+          title: t.projectTitle,
+          note: t.projectNote
         })}
         ${card({
           action: "exportUrl",

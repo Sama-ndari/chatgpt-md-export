@@ -11,6 +11,8 @@ export function sidebarStrings(): Record<string, string> {
     archiveTitle: vscode.l10n.t("From your data export"),
     archiveNote: vscode.l10n.t("Point at the .zip ChatGPT emailed you, or its unzipped folder."),
     recommended: vscode.l10n.t("No token needed"),
+    projectTitle: vscode.l10n.t("From a project"),
+    projectNote: vscode.l10n.t("Paste a project link, export every chat in it."),
     urlTitle: vscode.l10n.t("From a conversation link"),
     urlNote: vscode.l10n.t("Paste a /c/, /share/ or project link."),
     recent: vscode.l10n.t("Recent exports"),

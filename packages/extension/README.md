@@ -15,7 +15,9 @@ or simply read it offline.
 - **Readable HTML.** The same conversation as a collapsible chat view, with a preview panel inside VS Code.
 - **Attachments included.** Images and documents are saved next to the Markdown, with working links.
 - **Raw JSON.** The untouched payload, in case you need a field the Markdown drops.
-- **Two sources.** Your official ChatGPT data export, or a live conversation link.
+- **Three sources.** Your official ChatGPT data export, a whole project, or a single
+  conversation link.
+- **Whole projects.** Paste a project link and export every chat in it in one run.
 - **No unzipping.** Point at the `.zip` ChatGPT emails you and it is read in place.
 - **Export in bulk.** Tick as many conversations as you want and write them all in one run.
 - **Safe token storage.** Your bearer token goes to the OS keychain, never to a file.
@@ -34,6 +36,15 @@ the two export buttons, your recent exports, and your token.
 
 This works for everyone and exports attachments straight from the archive. In a bulk run,
 a conversation that cannot be read is reported at the end and the others still land.
+
+### From a project
+
+1. Click **Bearer token** in the sidebar, and paste your token.
+2. Click **From a project**, and paste the project link, the one that ends in `/project`.
+3. Tick the conversations you want, then confirm.
+
+ChatGPT forks a conversation under the same name prefixed with `Branch ·`. Those are listed
+but left unticked, so you do not export the same thread twice without meaning to.
 
 ### From a conversation link
 
@@ -92,9 +103,12 @@ VS Code 1.90 or later. Nothing else to install.
 
 ## Known limitations
 
-- Link mode uses chatgpt.com's private API. It can change without notice, and the token
-  expires. When the format changes, the extension says so and points you at the data export
-  instead of failing with a cryptic error.
+- Link and project modes use chatgpt.com's private API. It can change without notice, and the
+  token expires. The panel shows how many days your token has left, and when the format
+  changes the extension says so and points you at the data export instead of failing with a
+  cryptic error.
+- A project export is one request per conversation, so a large project takes a while.
+- Conversations you archived in ChatGPT are not listed by a project export.
 - Attachments uploaded by another account cannot be downloaded, by design.
 
 ## Rate it

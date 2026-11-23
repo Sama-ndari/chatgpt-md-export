@@ -29,6 +29,9 @@ conversations in one run.
 `chatgpt.com` request. Supports `/c/`, `/share/`, `/share/e/`, and project conversations.
 Public `/share/` links work without a token.
 
+**A whole project, bearer token required.** The extension lists every conversation of a
+ChatGPT project from its link and exports the ones you pick, in one run.
+
 ## Quick start: CLI
 
 ```bash

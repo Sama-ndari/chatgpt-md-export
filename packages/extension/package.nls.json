@@ -3,6 +3,7 @@
   "command.category": "ChatGPT Export",
   "command.exportFromUrl.title": "Export Conversation from URL",
   "command.exportFromArchive.title": "Export Conversation from Official Archive",
+  "command.exportFromProject.title": "Export a whole ChatGPT project",
   "command.setToken.title": "Set Bearer Token",
   "command.clearToken.title": "Clear Bearer Token",
   "command.preview.title": "Preview Last Export",

@@ -7,6 +7,7 @@ import {
   openExportMarkdown,
   revealExportFolder
 } from "./commands/export-actions.js";
+import { exportFromProject } from "./commands/export-project.js";
 import { exportFromUrl } from "./commands/export-url.js";
 import { clearToken, openTokenHelp, setToken } from "./commands/token.js";
 import { ExportHistory, type ExportRecord } from "./exports-history.js";
@@ -43,6 +44,7 @@ function buildCommands(deps: {
   return {
     "chatgptMdExport.exportFromUrl": () => exportFromUrl({ tokens, history }),
     "chatgptMdExport.exportFromArchive": () => exportFromArchive({ history }),
+    "chatgptMdExport.exportFromProject": () => exportFromProject({ tokens, history }),
     "chatgptMdExport.setToken": async () => void (await setToken(tokens)),
     "chatgptMdExport.clearToken": () => clearToken(tokens),
     "chatgptMdExport.openTokenHelp": () => openTokenHelp(),

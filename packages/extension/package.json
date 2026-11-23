@@ -1,7 +1,7 @@
 {
   "name": "chatgpt-md-export-vscode",
   "displayName": "ChatGPT Markdown Export",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "description": "%extension.description%",
   "publisher": "samandari",
   "author": "Samandari",
@@ -50,6 +50,12 @@
         "title": "%command.exportFromArchive.title%",
         "category": "%command.category%",
         "icon": "$(folder-opened)"
+      },
+      {
+        "command": "chatgptMdExport.exportFromProject",
+        "title": "%command.exportFromProject.title%",
+        "category": "%command.category%",
+        "icon": "$(repo)"
       },
       {
         "command": "chatgptMdExport.setToken",
@@ -138,9 +144,14 @@
           "group": "navigation@1"
         },
         {
-          "command": "chatgptMdExport.exportFromUrl",
+          "command": "chatgptMdExport.exportFromProject",
           "when": "view == chatgptMdExport.sidebar",
           "group": "navigation@2"
+        },
+        {
+          "command": "chatgptMdExport.exportFromUrl",
+          "when": "view == chatgptMdExport.sidebar",
+          "group": "navigation@3"
         },
         {
           "command": "chatgptMdExport.rate",
